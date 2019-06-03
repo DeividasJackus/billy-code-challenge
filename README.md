@@ -60,7 +60,7 @@ Unless specified otherwise, all handlers return a HTTP status code of 200 upon s
 
 ### `GET /inventory/availability`
 
-**Retrieve information about existing inventory.**
+**Retrieve information about existing inventory availability.**
 
 Response format:
 ```js
@@ -83,13 +83,13 @@ Response format:
 Request body format:
 ```js
  {
-   date, // purchase date
-   unitCost, // cost per unit
-   unitCount, // number of units
-   unitsSoldCount, // total number of units sold from this batch
-   unitsSoldValue, // total value of units sold from this batch
+   date: "2016-01-01", // purchase date
+   unitCost: 10, // cost per unit
+   unitCount: 200, // number of units
  }
 ```
+
+Returns the object back on success.
 
 ### `GET /inventory/purchases/:date`
 
