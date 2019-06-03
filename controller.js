@@ -1,12 +1,21 @@
 "use strict";
 
+const debug = require("debug")("challenge");
 const boom = require("@hapi/boom");
 
 const db = require("./db");
 
+function countUnitsAvailable(batches) {
+  return batches.map(({ unitCount }) => unitCount).reduce((a, b) => a + b, 0);
+}
+
+function countBatchValue(batches) {
+  return batches.map(({ unitCost, unitCount }) => unitCost * unitCount).reduce((p, c) => p + c, 0);
+}
+
 module.exports = {
   getAvailabilityInfo: async (req, res) => {
-    // Retrieve all batches from the database having at least 1 unit available
+    // Retrieve all batches from the database having at least 1 unit available, sorted by date
     const batches = await db
       .get("purchases")
       .filter(({ unitCount }) => unitCount > 0)
@@ -15,8 +24,8 @@ module.exports = {
 
     res.json({
       total: {
-        unitCount: batches.map(({ unitCount }) => unitCount).reduce((a, b) => a + b, 0), // total number of units in stock
-        value: batches.map(({ unitCost, unitCount }) => unitCost * unitCount).reduce((p, c) => p + c, 0), // aggregate value of units in stock
+        unitCount: countUnitsAvailable(batches), // total number of units in stock
+        value: countBatchValue(batches), // aggregate value of units in stock
       },
       currentBatch: batches[0]
         ? {
@@ -93,17 +102,57 @@ module.exports = {
   },
 
   addSale: async (req, res) => {
-    const { date, unitCount } = req.body;
+    const { date } = req.body;
+    let { unitCount: unitsToSell } = req.body;
 
-    // TODO: input validation
+    // TODO: input validation?
 
-    // Increment { unitsSoldCount, unitsSoldValue } for relevant purchase batch
+    // Retrieve all batches from the database having at least 1 unit available, sorted by date
+    // Make sure to limit the selection to batches with purchase date <= sale date
+    const batches = await db
+      .get("purchases")
+      .filter((r) => r.unitCount > 0 && r.date <= date)
+      .sortBy("date")
+      .value();
 
-    res.json("Add a new sale to the database.");
+    // Check if we have enough units in stock leading to the sale date
+    const unitsAvailable = countUnitsAvailable(batches);
+    debug(
+      `Trying to sell ${unitsToSell} unit(s) with ${unitsAvailable} unit(s) available in ${
+        batches.length
+      } applicable batch(es)`,
+    );
+
+    if (unitsAvailable < unitsToSell) {
+      throw boom.badRequest(`Can't sell ${unitsToSell} unit(s) with ${unitsAvailable} unit(s) available!`);
+    }
+
+    // eslint-disable-next-line no-restricted-syntax
+    for (const batch of batches) {
+      // Check how many units we should sell from the current batch
+      const batchUnitsBeingSold = Math.min(unitsToSell, batch.unitCount);
+
+      debug(`${unitsToSell} unit(s) left to sell, picking ${batchUnitsBeingSold} unit(s) out of batch`);
+
+      // Adjust numbers for given batch batch
+      batch.unitCount -= batchUnitsBeingSold;
+      batch.unitsSoldCount += batchUnitsBeingSold;
+      batch.unitsSoldValue += batch.unitCost * batchUnitsBeingSold;
+
+      unitsToSell -= batchUnitsBeingSold;
+
+      if (!unitsToSell) break;
+    }
+
+    res.json({});
   },
   getSalesInfo: async (req, res) => {
-    // TODO: input validation
+    // Retrieve all batches from the database
+    const batches = await db.get("purchases").value();
 
-    res.json("Retrieve information about recorded sales.");
+    res.json({
+      unitsSoldCount: batches.map((r) => r.unitsSoldCount).reduce((a, b) => a + b, 0), // total number of units sold
+      unitsSoldValue: batches.map((r) => r.unitsSoldValue).reduce((a, b) => a + b, 0), // total value of units sold
+    });
   },
 };
