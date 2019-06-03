@@ -2,13 +2,8 @@
 
 const express = require("express");
 const morgan = require("morgan");
-const boom = require("@hapi/boom");
 
-// A wrapper for asynchronous route handlers to ensure errors are caught and normalized
-// This allows us to use async-await handlers in which we simply throw instead of calling next()
-const asyncHandler = (fn) => (req, res, next) => {
-  Promise.resolve(fn(req, res, next)).catch((err) => next(err.isBoom ? err : boom.badImplementation(err)));
-};
+const routes = require("./routes");
 
 module.exports = () => {
   const app = express();
@@ -21,6 +16,8 @@ module.exports = () => {
 
   // Use a middleware for parsing JSON requests
   app.use(express.json());
+
+  routes.setup(app);
 
   // Error handling middleware for Express should be loaded after all route handlers are loaded
   app.use((err, req, res, next) => {
