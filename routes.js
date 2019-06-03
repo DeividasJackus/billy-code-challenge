@@ -2,6 +2,7 @@
 
 const boom = require("@hapi/boom");
 
+const db = require("./db");
 const controller = require("./controller");
 
 // A wrapper for asynchronous route handlers to ensure errors are caught and normalized
@@ -12,6 +13,15 @@ const asyncHandler = (fn) => (req, res, next) => {
 
 module.exports = {
   setup(app) {
+    if (app.get("env") === "development") {
+      app.get(
+        "/_/dbState",
+        asyncHandler(async (req, res) => {
+          res.json(db.getState());
+        }),
+      );
+    }
+
     app.get("/inventory/availability", asyncHandler(controller.getAvailabilityInfo));
 
     app.post("/inventory/purchases", asyncHandler(controller.addPurchase));
