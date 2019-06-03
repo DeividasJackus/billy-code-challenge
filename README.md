@@ -126,8 +126,8 @@ Returns the new object back upon success.
 Request body format:
 ```js
  {
-   date, // sale date
-   unitCount, // number of units sold
+   date: "2016-01-03", // sale date
+   unitCount: 50, // number of units sold
  }
 ```
 
