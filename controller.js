@@ -39,7 +39,13 @@ module.exports = {
       .value();
     if (existingDoc) throw boom.conflict(`Record for date ${date} already exists`);
 
-    const newDoc = { date, unitCost, unitCount };
+    const newDoc = {
+      date,
+      unitCost,
+      unitCount,
+      unitsSoldCount: 0,
+      unitsSoldValue: 0,
+    };
 
     // Add record to the database
     await db
@@ -87,7 +93,11 @@ module.exports = {
   },
 
   addSale: async (req, res) => {
+    const { date, unitCount } = req.body;
+
     // TODO: input validation
+
+    // Increment { unitsSoldCount, unitsSoldValue } for relevant purchase batch
 
     res.json("Add a new sale to the database.");
   },
