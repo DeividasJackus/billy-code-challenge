@@ -1,0 +1,25 @@
+{
+  "name": "billy-code-challenge",
+  "version": "0.1.0",
+  "description": "Code challenge for Billy",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/deividasjackus/billy-code-challenge.git"
+  },
+  "keywords": [
+    "challenge",
+    "code-challenge",
+    "inventory",
+    "fifo"
+  ],
+  "author": "Deividas Jackus <d@jackus.eu> (https://deividas.eu/?)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/deividasjackus/billy-code-challenge/issues"
+  },
+  "homepage": "https://github.com/deividasjackus/billy-code-challenge#readme"
+}
