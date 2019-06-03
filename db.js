@@ -30,7 +30,7 @@ db.defaults({
       unitsSoldValue: 0,
     },
   ],
-  sales: [],
+  sales: [], // We're not really using this, but could track sales here
 }).write();
 
 module.exports = db;
