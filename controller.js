@@ -6,7 +6,25 @@ const db = require("./db");
 
 module.exports = {
   getAvailabilityInfo: async (req, res) => {
-    res.json("Retrieve information about existing inventory.");
+    // Retrieve all batches from the database having at least 1 unit available
+    const batches = await db
+      .get("purchases")
+      .filter(({ unitCount }) => unitCount > 0)
+      .sortBy("date")
+      .value();
+
+    res.json({
+      total: {
+        unitCount: batches.map(({ unitCount }) => unitCount).reduce((a, b) => a + b, 0), // total number of units in stock
+        value: batches.map(({ unitCost, unitCount }) => unitCost * unitCount).reduce((p, c) => p + c, 0), // aggregate value of units in stock
+      },
+      currentBatch: batches[0]
+        ? {
+            unitCost: batches[0].unitCost, // current unit price
+            unitCount: batches[0].unitCount, // number of units available at given price
+          }
+        : null,
+    });
   },
 
   addPurchase: async (req, res) => {
