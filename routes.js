@@ -2,6 +2,8 @@
 
 const boom = require("@hapi/boom");
 
+const controller = require("./controller");
+
 // A wrapper for asynchronous route handlers to ensure errors are caught and normalized
 // This allows us to use async-await handlers in which we simply throw instead of calling next()
 const asyncHandler = (fn) => (req, res, next) => {
@@ -10,46 +12,13 @@ const asyncHandler = (fn) => (req, res, next) => {
 
 module.exports = {
   setup(app) {
-    app.get(
-      "/inventory/availability",
-      asyncHandler(async (req, res) => {
-        res.json("Retrieve information about existing inventory.");
-      }),
-    );
+    app.get("/inventory/availability", asyncHandler(controller.getAvailabilityInfo));
 
-    app.post(
-      "/inventory/purchases",
-      asyncHandler(async (req, res) => {
-        res.json("Add a new purchase to the database.");
-      }),
-    );
+    app.post("/inventory/purchases", asyncHandler(controller.addPurchase));
+    app.get("/inventory/purchases/:date", asyncHandler(controller.getPurchase));
+    app.patch("/inventory/purchases/:date", asyncHandler(controller.updatePurchase));
 
-    app.get(
-      "/inventory/purchases/:date",
-      asyncHandler(async (req, res) => {
-        res.json("Retrieve information about a recorded purchase.");
-      }),
-    );
-
-    app.patch(
-      "/inventory/purchases/:date",
-      asyncHandler(async (req, res) => {
-        res.json("Update the number of available units for a given batch.");
-      }),
-    );
-
-    app.post(
-      "/inventory/sales",
-      asyncHandler(async (req, res) => {
-        res.json("Add a new sale to the database.");
-      }),
-    );
-
-    app.get(
-      "/inventory/sales",
-      asyncHandler(async (req, res) => {
-        res.json("Retrieve information about recorded sales.");
-      }),
-    );
+    app.post("/inventory/sales", asyncHandler(controller.addSale));
+    app.get("/inventory/sales", asyncHandler(controller.getSalesInfo));
   },
 };
