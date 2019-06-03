@@ -60,7 +60,7 @@ Unless specified otherwise, all handlers return a HTTP status code of 200 upon s
 
 ### `GET /inventory/availability`
 
-**Retrieve information about existing inventory availability.**
+**Retrieve information about available inventory.**
 
 Response format:
 ```js
@@ -69,7 +69,7 @@ Response format:
      unitCount, // total number of units in stock
      value, // aggregate value of units in stock
    },
-   currentPrice: {
+   currentBatch: { // will be `null` if there's no stock left
      unitCost, // current unit price
      unitCount, // number of units available at given price
    },
