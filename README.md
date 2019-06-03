@@ -89,7 +89,7 @@ Request body format:
  }
 ```
 
-Returns the object back on success.
+Returns the new object back upon success.
 
 ### `GET /inventory/purchases/:date`
 
@@ -116,6 +116,8 @@ Request body format:
    unitCount, // number of units available in stock
  }
 ```
+
+Returns the new object back upon success.
 
 ### `POST /inventory/sales`
 
