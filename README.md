@@ -89,7 +89,7 @@ Request body format:
  }
 ```
 
-Returns the new object back upon success.
+Returns HTTP 201 & the new object back upon success.
 
 ### `GET /inventory/purchases/:date`
 
@@ -130,6 +130,8 @@ Request body format:
    unitCount: 50, // number of units sold
  }
 ```
+
+Returns HTTP 204 & no data upon success.
 
 ### `GET /inventory/sales`
 
