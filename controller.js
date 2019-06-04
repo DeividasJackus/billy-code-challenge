@@ -63,7 +63,7 @@ module.exports = {
       .write();
 
     // Return the added record
-    res.json(newDoc);
+    res.status(201).json(newDoc);
   },
   getPurchase: async (req, res) => {
     const { date } = req.params;
@@ -144,7 +144,7 @@ module.exports = {
       if (!unitsToSell) break;
     }
 
-    res.json({});
+    res.status(204).send();
   },
   getSalesInfo: async (req, res) => {
     // Retrieve all batches from the database
