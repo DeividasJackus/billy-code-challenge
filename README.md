@@ -1,6 +1,7 @@
 # Code challenge for Billy
 
 Original challenge document can be found [here](https://github.com/deividasjackus/billy-code-challenge/blob/master/challenge.pdf).
+Some thoughts & tasks can be found in the [GitHub project associated with this repository](https://github.com/deividasjackus/billy-code-challenge/projects/1).
 
 Authored 2019-06-03 by [Deividas Jackus](https://github.com/deividasjackus).
 
