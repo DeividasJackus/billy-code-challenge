@@ -22,7 +22,7 @@ module.exports = () => {
   routes.setup(app);
 
   // Error handling middleware for Express should be loaded after all route handlers are loaded
-  app.use((err, req, res) => {
+  app.use((err, req, res, next) => {
     if (err.isServer) {
       // We'll want to log server errors to stdout
       console.error(err);
