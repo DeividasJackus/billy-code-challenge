@@ -55,6 +55,8 @@ NODE_ENV=production npm start
 The API is a simple CRUD interface centered around `purchases` and `sales`.
 Additionally, there's a special `availability` resource.
 
+The API can be tested using [Insomnia](https://insomnia.rest/) and importing [the workspace file bundled with this project](https://github.com/deividasjackus/billy-code-challenge/blob/master/insomnia-workspace.json).
+
 All purchase/sale dates are strings in the format `YYYY-MM-dd`.
 
 Unless specified otherwise, all handlers return a HTTP status code of 200 upon success and a 4xx error upon user input error.
