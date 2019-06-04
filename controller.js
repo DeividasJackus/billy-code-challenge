@@ -2,8 +2,24 @@
 
 const debug = require("debug")("challenge");
 const boom = require("@hapi/boom");
+const joiDate = require("@hapi/joi-date");
+const joi = require("@hapi/joi").extend(joiDate);
 
 const db = require("./db");
+
+const schema = {
+  date: joi.date().format("YYYY-MM-DD"),
+  unitCost: joi.number().min(0),
+  unitCount: joi
+    .number()
+    .integer()
+    .min(0),
+};
+
+function validateInput(data, expectedSchema) {
+  const results = joi.validate(data, joi.object().keys(expectedSchema));
+  if (results.error) throw boom.badRequest(results.error);
+}
 
 function countUnitsAvailable(batches) {
   return batches.map(({ unitCount }) => unitCount).reduce((a, b) => a + b, 0);
@@ -37,9 +53,13 @@ module.exports = {
   },
 
   addPurchase: async (req, res) => {
-    const { date, unitCost, unitCount } = req.body;
+    validateInput(req.body, {
+      date: schema.date.required(),
+      unitCost: schema.unitCost.required(),
+      unitCount: schema.unitCount.required(),
+    });
 
-    // TODO: input validation?
+    const { date, unitCost, unitCount } = req.body;
 
     // Ensure no record exists for given date
     const existingDoc = await db
@@ -66,9 +86,11 @@ module.exports = {
     res.status(201).json(newDoc);
   },
   getPurchase: async (req, res) => {
-    const { date } = req.params;
+    validateInput(req.params, {
+      date: schema.date.required(),
+    });
 
-    // TODO: input validation?
+    const { date } = req.params;
 
     // Retrieve record from the database
     const existingDoc = await db
@@ -80,10 +102,15 @@ module.exports = {
     res.json(existingDoc);
   },
   updatePurchase: async (req, res) => {
+    validateInput(req.params, {
+      date: schema.date.required(),
+    });
+    validateInput(req.body, {
+      unitCount: schema.unitCount.required(),
+    });
+
     const { date } = req.params;
     const { unitCount } = req.body;
-
-    // TODO: input validation?
 
     // Retrieve record from the database
     const existingDoc = await db
@@ -102,10 +129,13 @@ module.exports = {
   },
 
   addSale: async (req, res) => {
+    validateInput(req.body, {
+      date: schema.date.required(),
+      unitCount: schema.unitCount.required(),
+    });
+
     const { date } = req.body;
     let { unitCount: unitsToSell } = req.body;
-
-    // TODO: input validation?
 
     // Retrieve all batches from the database having at least 1 unit available, sorted by date
     // Make sure to limit the selection to batches with purchase date <= sale date
