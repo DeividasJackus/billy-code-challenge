@@ -11,8 +11,10 @@ module.exports = () => {
   app.set("case sensitive routing", true);
   app.set("strict routing", true);
 
-  // Log incoming requests to stdout
-  app.use(morgan(app.get("env") === "development" ? "dev" : "tiny"));
+  // Log incoming requests to stdout (unless we're running tests)
+  if (typeof global.it !== "function") {
+    app.use(morgan(app.get("env") === "development" ? "dev" : "tiny"));
+  }
 
   // Use a middleware for parsing JSON requests
   app.use(express.json());
@@ -20,7 +22,7 @@ module.exports = () => {
   routes.setup(app);
 
   // Error handling middleware for Express should be loaded after all route handlers are loaded
-  app.use((err, req, res, next) => {
+  app.use((err, req, res) => {
     if (err.isServer) {
       // We'll want to log server errors to stdout
       console.error(err);
